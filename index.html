@@ -22,6 +22,10 @@
       height: 320px;
       perspective: 1000px;
       cursor: pointer;
+      transition: transform 0.3s;
+    }
+    .gift-box:hover {
+      transform: scale(1.05);
     }
     .box {
       width: 100%;
@@ -101,7 +105,7 @@
 </head>
 <body>
 
-  <div class="gift-box" onclick="openBox()">
+  <div class="gift-box" id="giftBox">
     <div class="box">
       <div class="side front">Hediye Kutusu</div>
       <div class="side back">Aç Beni ❤️</div>
@@ -136,9 +140,12 @@
 
   <script>
     function openBox() {
-      document.querySelector('.gift-box').classList.add('opened');
+      document.getElementById('giftBox').classList.add('opened');
       createConfetti(100);
     }
+
+    // Sayfa yüklendikten 3 saniye sonra otomatik aç (tıklama sorunu olmasın diye)
+    setTimeout(openBox, 3000);
 
     function createConfetti(count) {
       const canvas = document.getElementById('confetti');
