@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hediye Kutusu</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4, #a1c4fd);
+      font-family: 'Segoe UI', Arial, sans-serif;
+      color: #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .gift-box {
+      position: relative;
+      width: 320px;
+      height: 320px;
+      perspective: 1000px;
+      cursor: pointer;
+    }
+    .box {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 1.5s ease;
+      transform: rotateX(0deg) rotateY(0deg);
+    }
+    .side {
+      position: absolute;
+      width: 320px;
+      height: 320px;
+      background: #d32f2f;
+      border: 8px solid #b71c1c;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      color: white;
+      font-weight: bold;
+      backface-visibility: hidden;
+    }
+    .front  { transform: translateZ(160px); }
+    .back   { transform: rotateY(180deg) translateZ(160px); background: #b71c1c; }
+    .right  { transform: rotateY(90deg) translateZ(160px); }
+    .left   { transform: rotateY(-90deg) translateZ(160px); }
+    .top    { transform: rotateX(90deg) translateZ(160px); height: 320px; }
+    .bottom { transform: rotateX(-90deg) translateZ(160px); height: 320px; background: #b71c1c; }
+    .lid {
+      position: absolute;
+      width: 340px;
+      height: 80px;
+      background: #e53935;
+      top: -80px;
+      left: -10px;
+      border: 8px solid #b71c1c;
+      border-bottom: none;
+      border-radius: 20px 20px 0 0;
+      transform-origin: bottom;
+      transition: transform 1.5s ease;
+      z-index: 10;
+    }
+    .message-box {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      background: rgba(255,255,255,0.95);
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+      opacity: 0;
+      transition: opacity 1.5s ease 1s;
+      color: #333;
+      font-size: 1.5rem;
+      line-height: 1.6;
+      text-align: center;
+    }
+    .opened .lid {
+      transform: rotateX(120deg);
+    }
+    .opened .message-box {
+      opacity: 1;
+    }
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: -1;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="gift-box" onclick="openBox()">
+    <div class="box">
+      <div class="side front">Hediye Kutusu</div>
+      <div class="side back">Aç Beni ❤️</div>
+      <div class="side right"></div>
+      <div class="side left"></div>
+      <div class="side top"></div>
+      <div class="side bottom"></div>
+    </div>
+    <div class="lid"></div>
+  </div>
+
+  <div class="message-box">
+    Bazen kendimi ifade edemiyorum biliyorum<br>
+    çok zorluklar yaşadın her zaman yanındayım<br>
+    ben asla gitmiycem bunu bilmeni istiyorum<br>
+    her şeyin en iyisine layıksın<br>
+    maalesef istediğimiz şeyler her zaman olamayabiliyor<br>
+    sen bunları zaten biliyorsun ama ben her zaman senin yanındayım<br>
+    iyi ki varsın asla ama asla gitmiycem<br>
+    sen istemediğin sürece<br>
+    tekrardan iyi ki varsın iyi ki hayatımdasın<br><br>
+    Sen gerçekten çok güçlüsün, her zorluğun üstesinden gelebilecek seviyedesin<br>
+    dediğim gibi belki inanmayacaksın ama ben duygularımı ifade edemeyen biriyim<br>
+    veya son olaylardan sonra kimseye güvenmeyen biriyim ama sen farklı hissettirdin<br>
+    teşekkür ederim<br><br>
+    Senin gibi biriyle arkadaş olmak gerçekten özel bir şey<br>
+    kalbin inanılmaz temiz, gücün inanılmaz büyük<br>
+    senin varlığın bile insana umut veriyor ❤️
+  </div>
+
+  <canvas id="confetti"></canvas>
+
+  <script>
+    function openBox() {
+      document.querySelector('.gift-box').classList.add('opened');
+      createConfetti(100);
+    }
+
+    function createConfetti(count) {
+      const canvas = document.getElementById('confetti');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      let particles = [];
+      const colors = ['#ff0', '#f00', '#0f0', '#00f', '#ff69b4', '#fff'];
+
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height - canvas.height,
+          r: Math.random() * 8 + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          speed: Math.random() * 5 + 3,
+          rotation: Math.random() * 360,
+          rotSpeed: Math.random() * 10 - 5
+        });
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach((p, i) => {
+          p.y += p.speed;
+          p.rotation += p.rotSpeed;
+
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.rotation * Math.PI / 180);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.r, -p.r, p.r*2, p.r*2);
+          ctx.restore();
+
+          if (p.y > canvas.height + 50) particles.splice(i, 1);
+        });
+        if (particles.length) requestAnimationFrame(draw);
+      }
+      draw();
+    }
+  </script>
+
+</body>
+</html>
